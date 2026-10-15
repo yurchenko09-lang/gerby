@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Герби міст України</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --paper: #EEF1EA; --card: #FBFBF7; --ink: #202A22; --ink-muted: #5B6459; --line: #D7DBCC;
+    --btn-bg: #202A22; --btn-fg: #F4F6EF;
+    --truth: #3F7D58; --myth: #A8443B; --accent: #2E6E8E;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #13170F; --card: #1D2318; --ink: #E8ECE0; --ink-muted: #9AA391; --line: #2B3226;
+      --btn-bg: #E8ECE0; --btn-fg: #13170F; --truth: #70C08D; --myth: #E08579; --accent: #7CB8D9;
+    }
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin: 0; min-height: 100vh; background: var(--paper); color: var(--ink);
+    font-family: 'Source Sans 3', system-ui, sans-serif; display: flex; flex-direction: column;
+  }
+  .wrap{ max-width: 1200px; margin: 0 auto; padding: 1.5rem; width: 100%; flex: 1; display: flex; flex-direction: column; }
+  .wrap.narrow{ max-width: 480px; }
+  h1{ font-family: 'Fraunces', serif; font-weight: 700; text-align: center; margin: 0 0 1.2rem; font-size: clamp(1.4rem, 4vw, 2.2rem); }
+
+  .card{ background: var(--card); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); padding: 1.4rem; }
+  .center{ text-align: center; }
+  .muted{ color: var(--ink-muted); }
+  input[type=password], input[type=text], input[type=number], select{
+    font-family: 'IBM Plex Mono', monospace; font-size: 1rem; padding: 0.6rem 0.8rem; border-radius: 4px;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  }
+  input[type=password]{ width: 8rem; text-align: center; }
+  input[type=number]{ width: 6rem; text-align: center; }
+  button{ font-family: 'IBM Plex Mono', monospace; cursor: pointer; border: none; border-radius: 6px; }
+  .btn{ background: var(--btn-bg); color: var(--btn-fg); padding: 0.7rem 1.3rem; font-size: 0.95rem; letter-spacing: 0.03em; text-transform: uppercase; }
+  .btn.ghost{ background: transparent; color: var(--ink-muted); border: 1px solid var(--line); }
+  .btn.danger{ background: var(--myth); color: #fff; }
+  .btn:disabled{ opacity: 0.4; cursor: default; }
+
+  .reg-form{ display: flex; flex-direction: column; gap: 0.8rem; text-align: left; }
+  .reg-form label{ font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-transform: uppercase; color: var(--ink-muted); letter-spacing: 0.05em; display: block; margin-bottom: 0.3rem; }
+  .reg-form select, .reg-form input[type=text]{ width: 100%; font-size: 1.05rem; padding: 0.65rem 0.7rem; }
+
+  .setup-form{ display: flex; flex-direction: column; gap: 0.6rem; align-items: center; margin: 1rem 0; }
+  .setup-form label{ font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; text-transform: uppercase; color: var(--ink-muted); }
+
+  .flag-wrap{ text-align: center; margin: 0.5rem 0 0.8rem; }
+  .flag-wrap img{ width: auto; max-width: min(420px, 85vw); max-height: 48vh; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); background: #fff; padding: 0.4rem; }
+  .hint-text{ text-align: center; font-family: 'Fraunces', serif; font-style: italic; font-size: 1.05rem; color: var(--ink-muted); max-width: 640px; margin: 0 auto 1.3rem; padding: 0 1rem; line-height: 1.4; }
+  .live-counts{ text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--ink-muted); margin: 0 0 1rem; }
+
+  .opt-btn{
+    display: block; width: 100%; padding: 0.9rem 1rem; font-family: 'Source Sans 3', sans-serif; font-weight: 600;
+    font-size: 1.05rem; border-radius: 8px; margin-bottom: 0.6rem; background: var(--card); color: var(--ink);
+    border: 1px solid var(--line); text-align: left; transition: transform 0.1s;
+  }
+  .opt-btn:active{ transform: scale(0.98); }
+  .status-text{ text-align: center; font-family: 'Fraunces', serif; font-style: italic; font-size: 1.15rem; margin: 1.5rem 0; }
+  .qcount{ text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 1rem; }
+  .whoami{ text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-muted); margin-bottom: 1rem; }
+  .whoami .switch-link{ color: var(--accent); text-decoration: underline; }
+  .result-banner{ text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.3rem; padding: 1.1rem; border-radius: 10px; }
+  .result-banner.correct{ background: color-mix(in srgb, var(--truth) 20%, transparent); color: var(--truth); }
+  .result-banner.wrong{ background: color-mix(in srgb, var(--myth) 20%, transparent); color: var(--myth); }
+  .result-banner.missed{ background: var(--paper); color: var(--ink-muted); border: 1px dashed var(--line); }
+
+  .reveal-banner{ text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.4rem; padding: 1rem; border-radius: 8px; margin-bottom: 1.2rem; background: color-mix(in srgb, var(--truth) 20%, transparent); color: var(--truth); }
+  .controls{ display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .tv-question{ padding-bottom: 6.5rem; }
+  .side-action{
+    position: fixed; right: 1rem; bottom: 1.2rem; z-index: 40;
+    display: flex; flex-direction: column; align-items: stretch; gap: 0.6rem;
+    width: min(230px, 42vw);
+  }
+  .side-action .btn{ box-shadow: 0 6px 18px rgba(0,0,0,0.3); font-size: 0.82rem; line-height: 1.3; padding: 0.85rem 0.9rem; }
+  .join{ display: flex; align-items: center; gap: 1.2rem; justify-content: center; margin-top: 1.2rem; flex-wrap: wrap; }
+  .join img{ border-radius: 8px; border: 1px solid var(--line); }
+  .join .link{ font-family: 'IBM Plex Mono', monospace; font-size: 1rem; word-break: break-all; }
+  .join .copy-link-btn{ margin-top: 0.5rem; font-size: 0.78rem; padding: 0.5rem 0.8rem; }
+  .start-screen, .end-screen{ text-align: center; padding: 2rem 1rem; }
+  .auto-countdown{ font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-align: center; color: var(--ink-muted); margin: 0 0 0.4rem; min-height: 1.1em; }
+
+  .stats-wrap{ margin-top: 1.5rem; border-top: 1px dashed var(--line); padding-top: 1rem; }
+  .stats-title{ font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin: 0 0 0.7rem; text-align: center; }
+  table.stats{ width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  table.stats th, table.stats td{ padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); text-align: left; }
+  table.stats th{ font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); }
+  table.stats td.num{ text-align: center; font-variant-numeric: tabular-nums; font-family: 'IBM Plex Mono', monospace; }
+  table.stats td.num.correct{ color: var(--truth); font-weight: 600; }
+  table.stats td.num.wrong{ color: var(--myth); font-weight: 600; }
+  table.stats td.num.missed{ color: var(--ink-muted); }
+  table.stats td.rank{ font-family: 'IBM Plex Mono', monospace; color: var(--ink-muted); text-align: center; width: 2rem; }
+  table.stats tr.top1 td.rank{ color: #B8860B; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app-wrap">
+  <h1>Герби міст України</h1>
+  <div id="content" class="card center">Завантаження…</div>
+</div>
+
+<script>
+(function(){
+  var BASE = 'https://kabinet-10b17-default-rtdb.firebaseio.com';
+  var META_URL = BASE + '/gerby/meta.json';
+  var STUDENTS_URL = BASE + '/gerby/students.json';
+  var ANSWERS_URL = BASE + '/gerby/answers.json';
+  var studentUrl = function(id){ return BASE + '/gerby/students/' + id + '.json'; };
+  var answerUrl = function(idx, id){ return BASE + '/gerby/answers/' + idx + '/' + id + '.json'; };
+  var STUDENT_URL = location.origin + location.pathname;
+  var PIN = '25';
+
+  // Редагуйте цей список під ваші реальні групи.
+  var GROUPS = ['101', '102', '103'];
+
+  // Кожен запис: назва міста, посилання на зображення герба (без напису назви) та коротка підказка.
+  var POOL = [{"name":"Київ","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Kiev.svg?width=500","hint":"За літописною легендою, рік заснування — 482-й, хоча археологи датують найдавніше поселення VI–VII століттям."},{"name":"Вінниця","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Vinnytsia.svg?width=500","hint":"Назва вперше згадується 1363 року; розташоване на берегах Південного Бугу та є найбільшим містом історичного Поділля."},{"name":"Луцьк","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Herb_Lutsk.svg?width=500","hint":"Уперше згадане 1085 року в Іпатіївському літописі як Лучеськ; тут стоїть середньовічний замок князя Любарта."},{"name":"Дніпро","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Dnipro.svg?width=500","hint":"Поселення на цьому місці зводилося 1524–1526 років на базі козацької Старої Самари, на берегах великої річки."},{"name":"Донецьк","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Donetsk.svg?width=500","hint":"Засноване 1869 року валлійським підприємцем Джоном Г'юзом біля поселення Олександрівка; спершу називалося Юзівкою."},{"name":"Житомир","img":"https://commons.wikimedia.org/wiki/Special:FilePath/CoA_of_Zhytomyr_(UHT).svg?width=500","hint":"За легендою засноване 884 року давнім князем-деревлянином; перші письмові згадки належать до 1240 року, часів монгольської навали."},{"name":"Ужгород","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Uzhhorod.svg?width=500","hint":"Це найвіддаленіше від усіх морів місто в цій частині Європи; літописна згадка 895 року пов'язана зі штурмом тутешньої фортеці угорським вождем."},{"name":"Запоріжжя","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Герб_Запорожья_2003_года.svg?width=500","hint":"Засноване 1770 року як Олександрівська фортеця на Дніпровській лінії; поруч лежить історичний острів Хортиця."},{"name":"Івано-Франківськ","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Ivano-Frankivsk_(greater).svg?width=500","hint":"Засноване 1662 року як фортеця з магдебурзьким правом; тут стоїть палац Потоцьких XVII століття, нині музей."},{"name":"Кропивницький","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Kropyvnytskyi.svg?width=500","hint":"Виникло 1754 року навколо фортеці Святої Єлизавети; тут зародився перший український професійний театр — театр корифеїв."},{"name":"Луганськ","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Luhansk.svg?width=500","hint":"Засноване 1795 року як чавуноливарний завод за указом Катерини II."},{"name":"Львів","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Lviv.svg?width=500","hint":"Засноване близько 1256 року галицько-волинським князем, який назвав поселення на честь сина; історичний центр — об'єкт Світової спадщини ЮНЕСКО."},{"name":"Миколаїв","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Nikolayev.svg?width=500","hint":"Засноване 1789 року за наказом князя Потьомкіна при злитті двох річок; носить почесне звання «Місто-герой України»."},{"name":"Одеса","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Odesa.svg?width=500","hint":"Поселення на цьому місці згадується 1415 року як порт Хаджибей; історичний центр унесено до списку Світової спадщини ЮНЕСКО 2023 року."},{"name":"Полтава","img":"https://commons.wikimedia.org/wiki/Special:FilePath/CoA_of_Poltava_(UHT).svg?width=500","hint":"Найдавніша згадка — 1174 рік в Іпатіївському літописі під назвою Лтава; місто вважають одним із найзеленіших в Україні."},{"name":"Рівне","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Coat_of_arms_Rivne.svg/500px-Coat_of_arms_Rivne.svg.png","hint":"Це місто вперше згадується у писемних джерелах наприкінці XIII століття (1283 р.) і наприкінці XV століття отримало магдебурзьке право."},{"name":"Суми","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Герб_міста_Суми.svg/500px-Герб_міста_Суми.svg.png","hint":"Козаки заснували це місто в середині XVII століття на річці Псел, у межах історичної Слобідської України."},{"name":"Тернопіль","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Coat_of_arms_of_Ternopil.svg/500px-Coat_of_arms_of_Ternopil.svg.png","hint":"Засноване як прикордонна фортеця Польського королівства на річці Серет; до 1944 року мало іншу назву, пов'язану з родиною Тарновських."},{"name":"Харків","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Coat_of_arms_of_Kharkiv.svg/500px-Coat_of_arms_of_Kharkiv.svg.png","hint":"Засноване 1654 року як козацька фортеця, це друге за кількістю населення місто України, де на головній площі стоїть відома конструктивістська споруда Держпром."},{"name":"Херсон","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Coat_of_arms_of_Kherson.svg/500px-Coat_of_arms_of_Kherson.svg.png","hint":"Засноване 1778 року як база Чорноморського флоту на місці колишньої козацької фортеці, це портове місто на Дніпрі відоме суднобудуванням."},{"name":"Хмельницький","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Coat_of_Arms_of_Khmelnitsky.svg/500px-Coat_of_Arms_of_Khmelnitsky.svg.png","hint":"Вперше згадане 1431 року як військовий форпост на Південному Бузі; до 1954 року носило іншу назву — Проскурів."},{"name":"Черкаси","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Cherkasy_polk.svg/500px-Cherkasy_polk.svg.png","hint":"Відоме з XIII століття, це місто на Дніпрі має унікальний музей, присвячений лише одній книзі — «Кобзарю» Тараса Шевченка."},{"name":"Чернівці","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Coat_of_arms_of_Chernivtsi.svg/500px-Coat_of_arms_of_Chernivtsi.svg.png","hint":"Вперше згадане 1408 року, це місто на річці Прут було колишньою столицею історичного краю Буковина."},{"name":"Чернігів","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Coat_of_Arms_of_Chernihiv.svg/500px-Coat_of_Arms_of_Chernihiv.svg.png","hint":"За часів Київської Русі це місто було другим за значенням після Києва, а його Спасо-Преображенський собор зведено ще у 1030-х роках."},{"name":"Сімферополь","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/COA_Simferopol.svg/500px-COA_Simferopol.svg.png","hint":"На території цього міста збереглися руїни античного Неаполя Скіфського, а саме поселення засноване 1784 року на місці кримськотатарського Ак-Мечеті."},{"name":"Кривий Ріг","img":"https://upload.wikimedia.org/wikipedia/commons/3/3c/Coat_of_Arms_of_Kryvyy_Rih.png","hint":"Засноване 1775 року біля злиття річок Саксагань та Інгулець, це місто стало центром залізорудного видобутку й металургії."},{"name":"Маріуполь","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Mariupol_coat.svg/500px-Mariupol_coat.svg.png","hint":"Розташоване на березі Азовського моря, в місці впадання річки Кальміус, це місто засноване 1778 року й було відомим морським курортом."},{"name":"Севастополь","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/COA_of_Sevastopol.svg/500px-COA_of_Sevastopol.svg.png","hint":"Засноване 1783 року як база флоту, поруч із цим містом збереглися руїни античного Херсонеса, а пагорб Малахів курган нагадує про героїчну оборону під час Кримської війни."},{"name":"Кам'янець-Подільський","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Kamianets-Podilskyi.svg?width=500","hint":"Стародавню фортецю цього міста вважали найміцнішою в усій Речі Посполитій, а саме місто у 1919–1920 роках тимчасово було столицею Української Народної Республіки."},{"name":"Умань","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Coat_of_arms_of_Uman%2C_Ukraine.svg/500px-Coat_of_arms_of_Uman%2C_Ukraine.svg.png","hint":"Вперше згадане 1616 року, це місто відоме дендрологічним парком «Софіївка», закладеним 1796 року, і є місцем прощі хасидів Бреслова."},{"name":"Біла Церква","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Bila_Cerkva_polk.svg?width=500","hint":"Місто засноване 1032 року Ярославом Мудрим, а нині тут розташований дендропарк «Олександрія», один з найбільших в Україні."},{"name":"Ніжин","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Nizhyn_gerb.png?width=500","hint":"Місто славиться солінням огірків та ліцеєм, де навчався майбутній письменник Микола Гоголь."},{"name":"Переяслав","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Pereiaslav.svg?width=500","hint":"У цьому місті 1654 року відбулася рада, на якій козаки присягнули на союз із Московським царством."},{"name":"Батурин","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Герб_Батурин.svg?width=500","hint":"Колишня гетьманська столиця, яку 1708 року вщент знищили війська Меншикова після переходу гетьмана на бік шведів."},{"name":"Чигирин","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Chyhyryn.png?width=500","hint":"У XVII столітті це місто було гетьманською столицею за часів Богдана Хмельницького."},{"name":"Бердичів","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_Berdychiv.svg?width=500","hint":"Тут 1850 року одружився французький письменник Оноре де Бальзак, а 1857 року народився Джозеф Конрад."},{"name":"Жовква","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Zhovkva01.png?width=500","hint":"Місто заснував 1597 року польський гетьман Станіслав Жолкевський за ідеальним ренесансним планом."},{"name":"Дрогобич","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Герб_Дрогобича.svg?width=500","hint":"Тут збереглися найдавніші у Європі солеварні, а в XIX столітті місто стало центром видобутку нафти."},{"name":"Коломия","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_Arms_of_Kolomyia.svg?width=500","hint":"Місто відоме музеєм писанки та є культурним центром Гуцульщини, вперше згадане 1241 року в Галицько-Волинському літописі."},{"name":"Ялта","img":"https://commons.wikimedia.org/wiki/Special:FilePath/COA_Yalta%2C_Krym.svg?width=500","hint":"У лютому 1945 року тут відбулася конференція керівників СРСР, США та Великої Британії, що вирішувала долю післявоєнної Європи."},{"name":"Алушта","img":"https://commons.wikimedia.org/wiki/Special:FilePath/COA_Alushta.svg?width=500","hint":"Над цим приморським містом збереглася візантійська фортеця Алустон, а польський поет Міцкевич присвятив йому два сонети."},{"name":"Бахчисарай","img":"https://commons.wikimedia.org/wiki/Special:FilePath/COA_Bakhchysarai.svg?width=500","hint":"Тут знаходиться єдина у світі резиденція кримських ханів — Ханський палац, оспіваний Пушкіним у поемі про фонтан."},{"name":"Мелітополь","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_Melitopol.svg?width=500","hint":"Назва цього міста перекладається з грецької як «медове місто», а неподалік розташована кам'яна пам'ятка «Кам'яна Могила»."},{"name":"Бердянськ","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Герб_Бердянська.svg?width=500","hint":"Це портове місто на березі Азовського моря відоме косою з дельфінарієм і сафарі-парком, а 1939–1958 років мало назву на честь льотчиці Осипенко."},{"name":"Краматорськ","img":"https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_Kramatorsk.svg?width=500","hint":"Місто виникло 1868 року як залізнична станція, а згодом стало великим центром важкого машинобудування в Україні."},{"name":"Слов'янськ","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Coat_of_Arms_of_Sloviansk%2C_Ukraine.svg/500px-Coat_of_Arms_of_Sloviansk%2C_Ukraine.svg.png","hint":"Перша згадка про поселення на цьому місці датується 1627 роком, а фортеця тут закладена 1645 року; місто відоме солоним Вейсовим озером, яке й сьогодні використовують для лікувальних грязей."},{"name":"Лисичанськ","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Coat_of_arms_of_Lysychansk.svg/500px-Coat_of_arms_of_Lysychansk.svg.png","hint":"Засноване 1710 року, статус міста отримало 1938 року; тут зберігається колекція кам'яних половецьких «баб» і діє музей історії розвитку вугільної промисловості."},{"name":"Кременчук","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Coat_of_Arms_of_Kremenchuk.svg/500px-Coat_of_Arms_of_Kremenchuk.svg.png","hint":"Засноване близько 1571 року, магдебурзьке право отримало 1635 року; назва походить від тюркського слова, яке перекладається як «невелика (прикордонна) фортеця»."},{"name":"Кам'янське","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Coat_of_arms_Kamianske.svg/500px-Coat_of_arms_Kamianske.svg.png","hint":"Перша згадка про поселення тут — 1750 рік, статус міста отримано 1923 року; розташоване на берегах водосховища нижче греблі гідроелектростанції на Дніпрі, а з 1936 по 2016 рік мало іншу назву."},{"name":"Павлоград","img":"https://upload.wikimedia.org/wikipedia/commons/6/6e/Coat_of_arms_of_Pavlohrad.png","hint":"Засноване 1770 року, статус міста отримало 1784 року; є осередком вугільного басейну Західний Донбас."},{"name":"Нікополь","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Coat_of_Arms_Nikopol.svg/500px-Coat_of_Arms_Nikopol.svg.png","hint":"Засноване 1639 року, статус міста отримало 1915 року; є центром марганцевого рудного басейну, а на піщаній косі поблизу можна почути рідкісний природний феномен — «співучі піски»."},{"name":"Ізмаїл","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Izmayil_COA_2016.svg/500px-Izmayil_COA_2016.svg.png","hint":"Перша згадка 1337 року, статус міста — з 1867 року; розташоване на лівому березі Дунаю, навпроти нього на іншому березі — румунське село."},{"name":"Білгород-Дністровський","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Герб_Білгорода-Дністровського.svg/500px-Герб_Білгорода-Дністровського.svg.png","hint":"Засноване ще 498 року до нашої ери як давньогрецька колонія; тут збереглася потужна середньовічна фортеця, а до 1944 року місто мало іншу назву."},{"name":"Коростень","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Coat_of_Arms_of_Korosten.svg/500px-Coat_of_Arms_of_Korosten.svg.png","hint":"Давня літописна столиця слов'янського племені деревлян, де 945 року сталася відома трагічна подія — вбивство князя Ігоря; місто славиться цінними породами природного граніту й порцеляною."},{"name":"Новоград-Волинський","img":"https://upload.wikimedia.org/wikipedia/commons/f/f8/Coat_of_arms_of_Novohrad-Volynskyi.png","hint":"Перша згадка 1257 року; тут народилася українська поетеса Леся Українка."},{"name":"Ковель","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Coat_of_Arms_of_Kovel.svg/500px-Coat_of_Arms_of_Kovel.svg.png","hint":"Засноване 1565 року, того ж року отримало магдебурзьке право; розташоване на річці Турія, а поблизу є джерело мінеральної хлоридно-натрієво-йодо-бромної води."},{"name":"Володимир-Волинський","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_Volodymyr.svg/500px-Coat_of_arms_Volodymyr.svg.png","hint":"Перша літописна згадка — 988 рік, один із найдавніших датованих міст регіону; магдебурзьке право отримало 1324 року."},{"name":"Трускавець","img":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Coat_of_Arms_of_Truskavets%27.svg/500px-Coat_of_Arms_of_Truskavets%27.svg.png","hint":"Бальнеологічний курорт, перша згадка 1425 року; відомий мінеральною водою «Нафтуся» та покладами лікувального озокериту (гірського воску)."},{"name":"Прилуки","img":"https://upload.wikimedia.org/wikipedia/commons/e/e7/Прилуки-герб.png","hint":"Перша згадка 1085 року, магдебурзьке право отримало 1582 року; розташоване на березі річки Удай."}];
+
+  var MIN_Q = 1, MAX_Q = POOL.length;
+
+  var isTv = new URLSearchParams(location.search).has('tv');
+  var content = document.getElementById('content');
+  var appWrap = document.getElementById('app-wrap');
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"\']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function uid(){ return 'g-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+  async function getJson(url){
+    try {
+      var r = await fetch(url, { cache: 'no-store' });
+      if (!r.ok) return undefined;
+      return await r.json();
+    } catch (e) { return undefined; }
+  }
+  async function putJson(url, data){
+    try { await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return true; } catch (e) { return false; }
+  }
+  async function delJson(url){
+    try { await fetch(url, { method: 'DELETE' }); return true; } catch (e) { return false; }
+  }
+
+  function mulberry32(seed){
+    var a = seed >>> 0;
+    return function(){
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function seededShuffle(arr, seed){
+    var rng = mulberry32(seed);
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+  function findCity(name){
+    for (var i = 0; i < POOL.length; i++) if (POOL[i].name === name) return POOL[i];
+    return null;
+  }
+  // Той самий idx + той самий order -> ті самі 7 варіантів на кожному пристрої, без зайвих запитів.
+  function optionsFor(idx, order){
+    var correctName = order[idx];
+    var pool = POOL.filter(function(c){ return c.name !== correctName; });
+    var distractors = seededShuffle(pool, idx * 7919 + 13).slice(0, 6);
+    var combined = distractors.concat([findCity(correctName)]);
+    return seededShuffle(combined, idx * 104729 + 31);
+  }
+  function randomOrder(n){
+    var names = POOL.map(function(c){ return c.name; });
+    var shuffled = names.slice();
+    for (var i = shuffled.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+    }
+    return shuffled.slice(0, Math.min(n, shuffled.length));
+  }
+
+  /* ================= STUDENT VIEW ================= */
+  function studentInit(){
+    appWrap.className = 'wrap narrow';
+    var myId = null, myGroup = null, myName = null;
+    try {
+      myId = localStorage.getItem('gerby-student-id');
+      myGroup = localStorage.getItem('gerby-student-group');
+      myName = localStorage.getItem('gerby-student-name');
+    } catch (e) {}
+
+    function answeredKey(idx){ return 'gerby-answered-' + idx; }
+    function getAnswered(idx){ try { return localStorage.getItem(answeredKey(idx)); } catch(e){ return null; } }
+    function setAnswered(idx, name){ try { localStorage.setItem(answeredKey(idx), name); } catch(e){} }
+
+    // Кожна нова гра (перший старт або "Почати заново") отримує свій gameId від
+    // викладача, і посилання/QR на цю гру несе його в собі (?g=...). Якщо
+    // телефон бачить ІНШИЙ gameId, ніж той, під яким він реєструвався востаннє,
+    // це справді нова гра — реєстрація та кеш відповідей на цьому телефоні
+    // скидаються, і показується форма заново. Виняток — перехід від "гри ще
+    // немає" (null) до першої реальної гри: студентів, що зареєструвались у
+    // лобі заздалегідь, це не повинно скидати.
+    var myGameId = null;
+    try { myGameId = localStorage.getItem('gerby-game-id'); } catch(e){}
+    var urlGameId = null;
+    try { urlGameId = new URLSearchParams(location.search).get('g'); } catch(e){}
+
+    function clearRegistration(){
+      try {
+        localStorage.removeItem('gerby-student-id');
+        localStorage.removeItem('gerby-student-group');
+        localStorage.removeItem('gerby-student-name');
+        for (var i = 0; i < 200; i++) localStorage.removeItem(answeredKey(i));
+      } catch(e){}
+      myId = null; myGroup = null; myName = null;
+    }
+
+    function syncGameId(gameId, opts){
+      if (!gameId || gameId === myGameId) return false;
+      var isNewRound = myGameId !== null; // null -> перша гра, не рестарт
+      try { localStorage.setItem('gerby-game-id', gameId); } catch(e){}
+      myGameId = gameId;
+      if (isNewRound) {
+        var hadRegistration = !!myId;
+        clearRegistration();
+        if (hadRegistration && opts && opts.reloadIfLive) { location.reload(); }
+      }
+      return isNewRound;
+    }
+
+    if (urlGameId) { syncGameId(urlGameId); }
+
+    function showRegistration(){
+      var opts = '<option value="" disabled selected>Оберіть групу</option>' +
+        GROUPS.map(function(g){ return '<option value="' + esc(g) + '">' + esc(g) + '</option>'; }).join('');
+      content.innerHTML = '<form class="reg-form" id="reg-form">' +
+        '<div><label>Група</label><select id="reg-group" required>' + opts + '</select></div>' +
+        '<div><label>ПІБ (повністю)</label><input type="text" id="reg-name" placeholder="Прізвище Ім’я По батькові" required></div>' +
+        '<button class="btn" type="submit">Приєднатись</button>' +
+        '</form>';
+      document.getElementById('reg-form').addEventListener('submit', async function(e){
+        e.preventDefault();
+        var group = document.getElementById('reg-group').value;
+        var name = document.getElementById('reg-name').value.trim();
+        if (!group || !name) return;
+        myId = uid(); myGroup = group; myName = name;
+        // Прив'язуємо реєстрацію до гри, яка НАСПРАВДІ зараз йде на сервері
+        // (а не до параметра з посилання, яке міг зберегти телефон ще з
+        // минулого разу) — щоб наступне опитування одразу після реєстрації не
+        // сприйняло її як "стару" і не скинуло щойно заповнену форму.
+        var currentMeta = await getJson(META_URL);
+        if (currentMeta && currentMeta.gameId) myGameId = currentMeta.gameId;
+        try {
+          localStorage.setItem('gerby-student-id', myId);
+          localStorage.setItem('gerby-student-group', myGroup);
+          localStorage.setItem('gerby-student-name', myName);
+          if (myGameId) localStorage.setItem('gerby-game-id', myGameId);
+        } catch (err) {}
+        content.innerHTML = '<p class="status-text">Приєднуємось...</p>';
+        await putJson(studentUrl(myId), { group: myGroup, name: myName });
+        startVotingLoop();
+      });
+    }
+
+    var lastKey = null;
+
+    function whoamiHtml(){ return '<p class="whoami">' + esc(myGroup) + ' · ' + esc(myName) + ' · <a href="#" id="switch-student" class="switch-link">не я?</a></p>'; }
+
+    // «не я?» — щоб на ОДНОМУ Й ТОМУ Ж телефоні можна було зареєструватися
+    // наново (для тестування, або якщо пристрій передають іншому студенту).
+    // Кнопки на TV («Почати заново» / «Повне скидання») навмисно не чіпають
+    // реєстрацію телефону — інакше справжнім студентам довелось би вводити
+    // ПІБ повторно щоразу, як викладач запускає новий раунд.
+    function bindSwitchLink(){
+      var link = document.getElementById('switch-student');
+      if (!link) return;
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        try {
+          localStorage.removeItem('gerby-student-id');
+          localStorage.removeItem('gerby-student-group');
+          localStorage.removeItem('gerby-student-name');
+          localStorage.removeItem('gerby-game-id');
+          for (var i = 0; i < 200; i++) localStorage.removeItem(answeredKey(i));
+        } catch (err) {}
+        location.reload();
+      });
+    }
+
+    function render(meta){
+      if (!meta || !meta.order) {
+        content.innerHTML = whoamiHtml() + '<p class="status-text">Очікуємо, поки викладач розпочне гру...</p>';
+        bindSwitchLink();
+        return;
+      }
+      var idx = meta.currentIndex;
+      if (idx >= meta.totalQuestions) {
+        content.innerHTML = whoamiHtml() + '<p class="status-text">Гра завершена. Дякуємо за участь! 🎉</p>';
+        bindSwitchLink();
+        return;
+      }
+      var answered = getAnswered(idx);
+      var html = whoamiHtml() + '<p class="qcount">Герб ' + (idx + 1) + ' з ' + meta.totalQuestions + '</p>';
+      if (meta.revealed) {
+        var correctName = meta.order[idx];
+        var correctObj = findCity(correctName);
+        if (answered == null) {
+          html += '<div class="result-banner missed">Пропуск — правильно: ' + esc(correctObj ? correctObj.name : correctName) + '</div>';
+        } else {
+          var wasCorrect = answered === correctName;
+          html += '<div class="result-banner ' + (wasCorrect ? 'correct' : 'wrong') + '">' +
+            (wasCorrect ? 'Правильно! ✓' : 'Неправильно ✗ (' + esc(correctObj ? correctObj.name : correctName) + ')') + '</div>';
+        }
+      } else if (answered != null) {
+        html += '<p class="status-text">Ти обрав: <b>' + esc(answered) + '</b>. Чекай результат на екрані!</p>';
+      } else {
+        var options = optionsFor(idx, meta.order);
+        html += options.map(function(o){ return '<button class="opt-btn" data-name="' + esc(o.name) + '">' + esc(o.name) + '</button>'; }).join('');
+      }
+      content.innerHTML = html;
+      bindSwitchLink();
+      if (!meta.revealed && answered == null) {
+        content.querySelectorAll('.opt-btn').forEach(function(btn){
+          btn.addEventListener('click', async function(){
+            content.querySelectorAll('.opt-btn').forEach(function(b){ b.disabled = true; });
+            var name = btn.getAttribute('data-name');
+            setAnswered(idx, name);
+            await putJson(answerUrl(idx, myId), { choice: name, ts: new Date().toISOString() });
+            render(meta);
+          });
+        });
+      }
+    }
+
+    async function poll(){
+      try {
+        var meta = await getJson(META_URL);
+        if (meta === undefined) return; // мережевий збій — не чіпаємо екран, спробуємо наступного разу
+        if (meta && meta.gameId) { syncGameId(meta.gameId, { reloadIfLive: true }); }
+        var key = meta ? (meta.gameId + ':' + meta.currentIndex + ':' + meta.revealed + ':' + meta.totalQuestions) : 'none';
+        if (key !== lastKey) { lastKey = key; render(meta); }
+      } catch (e) { console.error('poll error', e); }
+    }
+
+    function startVotingLoop(){ poll(); setInterval(poll, 2000); }
+
+    if (myId && myGroup && myName) { startVotingLoop(); } else { showRegistration(); }
+  }
+
+  /* ================= TV / HOST VIEW ================= */
+  function tvInit(){
+    var unlocked = false;
+    var startScreenShown = false;
+    var pendingGameId = null;
+
+    function pinScreen(){
+      content.innerHTML = '<p class="muted" style="margin-bottom:1rem;">Режим викладача — введіть PIN</p>' +
+        '<form id="pin-form"><input type="password" id="pin-input" inputmode="numeric" autocomplete="off" placeholder="Код"> <button class="btn" type="submit">Увійти</button></form>';
+      document.getElementById('pin-form').addEventListener('submit', function(e){
+        e.preventDefault();
+        if (document.getElementById('pin-input').value === PIN) { unlocked = true; tvLoop(); }
+        else { document.getElementById('pin-input').value=''; document.getElementById('pin-input').placeholder='Невірно'; }
+      });
+    }
+
+    // Коли передано gameId — посилання/QR веде на адресу саме цієї гри
+    // (?g=...), тож відкривши його, телефон завжди реєструється наново.
+    function joinBlockHtml(gameId){
+      var url = gameId ? (STUDENT_URL + '?g=' + encodeURIComponent(gameId)) : STUDENT_URL;
+      var qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(url);
+      return '<div class="join"><img src="' + qrSrc + '" width="120" height="120" alt="QR-код"><div><p class="muted" style="margin:0 0 0.3rem;">Відскануй або відкрий:</p><p class="link">' + esc(url) + '</p>' +
+        '<button class="btn ghost copy-link-btn" type="button" data-url="' + esc(url) + '">Скопіювати посилання</button></div></div>';
+    }
+
+    async function copyText(text){
+      try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function bindCopyButtons(){
+      content.querySelectorAll('.copy-link-btn').forEach(function(btn){
+        btn.addEventListener('click', async function(){
+          var ok = await copyText(btn.getAttribute('data-url'));
+          var original = btn.textContent;
+          btn.textContent = ok ? 'Скопійовано! ✓' : 'Не вдалось — виділіть вручну';
+          setTimeout(function(){ btn.textContent = original; }, 1600);
+        });
+      });
+    }
+
+    async function setMeta(newMeta){ await putJson(META_URL, newMeta); }
+
+    // Лідерборд: сортуємо за результатом (найбільше правильних — вгорі), а не за групою.
+    // Закриті питання = повністю відіграні (index < currentIndex) або поточне, якщо вже розкрите.
+    function computeStatsRows(students, answers, meta){
+      var studentIds = Object.keys(students || {});
+      if (!meta || !meta.order) return [];
+      var lastClosed = meta.revealed ? meta.currentIndex : meta.currentIndex - 1;
+      var rows = studentIds.map(function(id){
+        var s = students[id];
+        var correct = 0, wrong = 0, missed = 0;
+        for (var i = 0; i <= lastClosed; i++) {
+          var a = answers && answers[i] && answers[i][id];
+          if (!a) { missed++; continue; }
+          if (a.choice === meta.order[i]) correct++; else wrong++;
+        }
+        return { group: (s && s.group) || '', name: (s && s.name) || '', correct: correct, wrong: wrong, missed: missed };
+      });
+      rows.sort(function(a, b){ return (b.correct - a.correct) || (a.wrong - b.wrong) || a.name.localeCompare(b.name, 'uk'); });
+      return rows;
+    }
+
+    function statsHtml(students, answers, meta){
+      var rows = computeStatsRows(students, answers, meta);
+      if (!rows.length) return '';
+      var body = rows.map(function(r, i){
+        return '<tr' + (i === 0 && r.correct > 0 ? ' class="top1"' : '') + '><td class="rank">' + (i + 1) + '</td><td>' + esc(r.group) + '</td><td>' + esc(r.name) + '</td>' +
+          '<td class="num correct">' + r.correct + '</td><td class="num wrong">' + r.wrong + '</td><td class="num missed">' + r.missed + '</td></tr>';
+      }).join('');
+      return '<div class="stats-wrap"><p class="stats-title">Результати (' + rows.length + ' учасників), відсортовано за рахунком</p>' +
+        '<table class="stats"><thead><tr><th>#</th><th>Група</th><th>ПІБ</th><th>✓</th><th>✗</th><th>Пропуск</th></tr></thead><tbody>' + body + '</tbody></table>' +
+        '<div class="controls" style="margin-top:0.9rem;"><button class="btn ghost" id="download-stats-btn" type="button">Завантажити результати (CSV)</button></div></div>';
+    }
+
+    function csvEscape(v){
+      var s = String(v == null ? '' : v);
+      return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    function downloadStatsCsv(students, answers, meta){
+      var rows = computeStatsRows(students, answers, meta);
+      var lines = [['Група', 'ПІБ', 'Правильно', 'Неправильно', 'Пропущено'].map(csvEscape).join(',')];
+      rows.forEach(function(r){
+        lines.push([r.group, r.name, r.correct, r.wrong, r.missed].map(csvEscape).join(','));
+      });
+      var csv = '\uFEFF' + lines.join('\r\n');
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var d = new Date();
+      var pad = function(n){ return n < 10 ? '0' + n : '' + n; };
+      var fname = 'gerby-rezultaty-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.csv';
+      var a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    }
+
+    // --- Авто-перелистування: локальний секундомір лише для плавного відображення ---
+    // (сам перехід на наступний крок відбувається в renderTvInner на основі мітки часу з бази).
+    var autoCountdown = { active: false, endAt: 0 };
+    setInterval(function(){
+      var el = document.getElementById('auto-countdown');
+      if (!el || !autoCountdown.active) return;
+      var left = Math.max(0, Math.ceil((autoCountdown.endAt - Date.now()) / 1000));
+      el.textContent = 'Авто через ' + left + ' с';
+    }, 1000);
+
+    function startScreenHtml(regCount, gameId){
+      return '<div class="start-screen"><p class="muted">Гру ще не почато.</p>' +
+        '<p class="muted" id="reg-count">Зареєстровано: ' + regCount + '</p>' +
+        '<div class="setup-form"><label for="qcount-input">Кількість питань (' + MIN_Q + '–' + MAX_Q + ')</label>' +
+        '<input type="number" id="qcount-input" min="' + MIN_Q + '" max="' + MAX_Q + '" value="20" step="1">' +
+        '<label for="autosec-input">Автоперелистування, сек (0 = вимкнено)</label>' +
+        '<input type="number" id="autosec-input" min="0" max="600" value="0" step="1"></div>' +
+        '<div class="controls" style="margin-top:0.5rem;"><button class="btn" id="start-btn">Почати гру</button></div>' +
+        joinBlockHtml(gameId) + '</div>';
+    }
+
+    async function renderTv(){
+      if (!unlocked) return;
+      try {
+        await renderTvInner();
+      } catch (err) {
+        console.error('renderTv error', err);
+      }
+    }
+
+    async function renderTvInner(){
+      var meta = await getJson(META_URL);
+      if (meta === undefined) return; // мережевий збій — лишаємо екран як є, спробуємо за 3с
+
+      if (!meta || !meta.order) {
+        // Гру ще не почато: сама розмітка тут не залежить від живих даних, тож поки
+        // викладач не тиснув «Почати гру», екран цілком не перемальовуємо — інакше
+        // періодичний опитувальний цикл (кожні 3с) стирав би введене число. Лічильник
+        // зареєстрованих оновлюємо точково, не чіпаючи поле вводу.
+        if (startScreenShown) {
+          var regEl = document.getElementById('reg-count');
+          if (regEl) {
+            var liveStudents = await getJson(STUDENTS_URL);
+            regEl.textContent = 'Зареєстровано: ' + Object.keys(liveStudents || {}).length;
+          }
+          return;
+        }
+        startScreenShown = true;
+        autoCountdown.active = false;
+        // Готуємо унікальне посилання ЗАЗДАЛЕГІДЬ, ще до старту гри — щоб QR/посилання,
+        // яке студенти сканують у коридорі перед парою, лишалося чинним і після «Почати гру»,
+        // а не змінювалося на інше.
+        if (!pendingGameId) pendingGameId = uid();
+        var initialStudents = await getJson(STUDENTS_URL);
+        content.innerHTML = startScreenHtml(Object.keys(initialStudents || {}).length, pendingGameId);
+        bindCopyButtons();
+        document.getElementById('start-btn').addEventListener('click', async function(){
+          var raw = parseInt(document.getElementById('qcount-input').value, 10);
+          if (isNaN(raw)) raw = 20;
+          var n = Math.max(MIN_Q, Math.min(MAX_Q, raw));
+          var autoRaw = parseInt(document.getElementById('autosec-input').value, 10);
+          var autoSeconds = (isNaN(autoRaw) || autoRaw < 0) ? 0 : autoRaw;
+          var order = randomOrder(n);
+          var gameId = pendingGameId || uid();
+          pendingGameId = null; // наступного разу, коли повернемось на цей екран — нове посилання
+          startScreenShown = false;
+          await setMeta({ totalQuestions: order.length, order: order, currentIndex: 0, revealed: false, gameId: gameId, autoSeconds: autoSeconds, phaseStartedAt: Date.now() });
+          renderTv();
+        });
+        return;
+      }
+      startScreenShown = false;
+      var students = await getJson(STUDENTS_URL);
+      var answers = await getJson(ANSWERS_URL);
+      var idx = meta.currentIndex;
+      if (idx >= meta.totalQuestions) {
+        autoCountdown.active = false;
+        content.innerHTML = '<div class="end-screen"><p class="status-text">Гру завершено! Дякую всім за участь 🎉</p>' +
+          '<div class="controls" style="margin-top:1.2rem;"><button class="btn ghost" id="restart-btn">Почати заново (нова добірка гербів)</button> <button class="btn danger" id="wipe-btn">Повне скидання (нова пара)</button></div></div>' +
+          statsHtml(students, answers, meta);
+        document.getElementById('restart-btn').addEventListener('click', async function(){
+          await delJson(META_URL);
+          await delJson(ANSWERS_URL);
+          renderTv();
+        });
+        document.getElementById('wipe-btn').addEventListener('click', async function(){
+          if (!confirm('Стерти всіх учасників і всі відповіді? Це для нової пари/групи.')) return;
+          await delJson(BASE + '/gerby.json');
+          renderTv();
+        });
+        var dlBtn = document.getElementById('download-stats-btn');
+        if (dlBtn) dlBtn.addEventListener('click', function(){ downloadStatsCsv(students, answers, meta); });
+        return;
+      }
+
+      // --- Авто-перелистування: якщо час поточної фази вийшов, самі виконуємо
+      // те саме, що зробила б кнопка «Показати відповідь» / «Наступний герб». ---
+      if (meta.autoSeconds && meta.autoSeconds > 0 && meta.phaseStartedAt) {
+        var elapsed = Date.now() - meta.phaseStartedAt;
+        if (elapsed >= meta.autoSeconds * 1000) {
+          if (!meta.revealed) {
+            await setMeta({ totalQuestions: meta.totalQuestions, order: meta.order, currentIndex: idx, revealed: true, gameId: meta.gameId, autoSeconds: meta.autoSeconds, phaseStartedAt: Date.now() });
+          } else {
+            await setMeta({ totalQuestions: meta.totalQuestions, order: meta.order, currentIndex: idx + 1, revealed: false, gameId: meta.gameId, autoSeconds: meta.autoSeconds, phaseStartedAt: Date.now() });
+          }
+          return renderTvInner();
+        }
+      }
+
+      var correctName = meta.order[idx];
+      var correctObj = findCity(correctName);
+      var curAnswers = (answers && answers[idx]) || {};
+      var totalVotes = Object.keys(curAnswers).length;
+      var studentsCount = Object.keys(students || {}).length;
+
+      var countdownText = '';
+      if (meta.autoSeconds && meta.autoSeconds > 0 && meta.phaseStartedAt) {
+        autoCountdown.active = true;
+        autoCountdown.endAt = meta.phaseStartedAt + meta.autoSeconds * 1000;
+        // Рахуємо текст одразу (а не чекаємо секундного тіка), щоб рядок не встигав
+        // з'явитись порожнім і "стрибнути" — саме це й смикало б зображення герба.
+        countdownText = 'Авто через ' + Math.max(0, Math.ceil((autoCountdown.endAt - Date.now()) / 1000)) + ' с';
+      } else {
+        autoCountdown.active = false;
+      }
+
+      // Навмисно НЕ показуємо тут живий підрахунок голосів за варіанти — бачачи, який
+      // варіант обирає більшість, студенти просто повторюють за нею замість власної відповіді.
+      var html = '<div class="tv-question">';
+      html += '<p class="qcount">Герб ' + (idx + 1) + ' з ' + meta.totalQuestions + '</p>';
+      html += '<p class="live-counts">Зареєстровано: <b>' + studentsCount + '</b> · Відповіли: <b>' + totalVotes + '</b> з ' + studentsCount + '</p>';
+      html += '<p class="auto-countdown" id="auto-countdown">' + countdownText + '</p>';
+      html += '<div class="flag-wrap"><img src="' + esc(correctObj ? correctObj.img : '') + '" alt="Герб міста"></div>';
+      html += '<p class="hint-text">' + esc(correctObj ? correctObj.hint : '') + '</p>';
+
+      if (meta.revealed) {
+        html += '<div class="reveal-banner">Правильна відповідь: ' + esc(correctObj ? correctObj.name : correctName) + '</div>';
+      }
+      html += joinBlockHtml(meta.gameId);
+      html += '</div>';
+      if (meta.revealed) {
+        html += '<div class="side-action"><button class="btn" id="next-btn">Наступний герб →</button></div>';
+      } else {
+        html += '<div class="side-action"><button class="btn" id="reveal-btn">Показати відповідь (закриє голосування)</button></div>';
+      }
+
+      content.innerHTML = html;
+      bindCopyButtons();
+      if (meta.revealed) {
+        document.getElementById('next-btn').addEventListener('click', async function(){
+          await setMeta({ totalQuestions: meta.totalQuestions, order: meta.order, currentIndex: idx + 1, revealed: false, gameId: meta.gameId, autoSeconds: meta.autoSeconds || 0, phaseStartedAt: Date.now() });
+          renderTv();
+        });
+      } else {
+        document.getElementById('reveal-btn').addEventListener('click', async function(){
+          await setMeta({ totalQuestions: meta.totalQuestions, order: meta.order, currentIndex: idx, revealed: true, gameId: meta.gameId, autoSeconds: meta.autoSeconds || 0, phaseStartedAt: Date.now() });
+          renderTv();
+        });
+      }
+    }
+
+    function tvLoop(){ renderTv(); setInterval(renderTv, 3000); }
+
+    pinScreen();
+  }
+
+  if (isTv) { tvInit(); } else { studentInit(); }
+})();
+</script>
+</body>
+</html>
